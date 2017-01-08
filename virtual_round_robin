@@ -1,0 +1,89 @@
+# ass_python
+
+def get_input(process_no, arrray_input_list):
+    loop = process_no
+
+    while (loop):
+        info = {}
+        info['name'] = raw_input('Enter Process Name : ')
+        info['arrive'] = input('Enter Arrival Time :')
+        info['process'] = input('Enter Burst Time :')
+        info['sum'] = info['process']
+        info['time_slice'] = 0
+        info['brust'] = 0
+        info['wait'] = 0
+        arrray_input_list.append(info)
+        loop -= 1
+    return
+
+
+def VRR(process_no, arrray_input_list, time_slice):
+    ready = []
+    wait = []
+    suspend = []
+    loop = process_no
+    total = 0
+    temp = None
+    from operator import itemgetter
+    arrray_input_list.sort(key=itemgetter('arrive'))
+    while (loop):
+
+        if (len(arrray_input_list) != 0):
+            if (arrray_input_list[0]['arrive'] <= total):
+                ready += [arrray_input_list[0]]
+                del arrray_input_list[0]
+
+        if (len(suspend) != 0):
+            if (temp == None):
+                suspend.sort(key=itemgetter('wait'))
+                if (suspend[0]['wait'] <= total):
+                    temp = suspend[0]
+                    del suspend[0]
+
+        elif (len(ready) != 0):
+            if (temp == None):
+                temp = ready[0]
+                del ready[0]
+                temp['time_slice'] = time_slice
+                temp['brust'] = input("Input Brust Time For Process %s: " % (temp['name']))
+                temp['wait'] = input("Input IO wait Time For Process %s: " % (temp['name']))
+
+        if (temp != None):
+            total += 1
+            temp['time_slice'] -= 1
+            temp['brust'] -= 1
+            temp['process'] -= 1
+
+            if (temp['process'] == 0):
+                print "%s Turn Around Time is : %d And its Waiting time is : %d" % (
+                temp['name'], total - temp['arrive'], total - (temp['arrive'] + temp['sum']))
+                loop -= 1
+                temp = None
+            elif (temp['time_slice'] == 0):
+                ready += [temp]
+                temp = None
+            elif (temp['brust'] == 0):
+                wait += [temp]
+                temp = None
+        else:
+            total += 1
+
+        if (len(wait) != 0):
+            wait.sort(key=itemgetter('wait'))
+            if (wait[0]['wait'] <= total):
+                suspend += [wait[0]]
+                del wait[0]
+
+ 
+
+
+
+
+process_no = int(raw_input('Enter the No. of Process : '))
+arrray_input_list = []
+get_input(process_no, arrray_input_list)
+time_slice = input("Input The Time time_slice : ")
+VRR(process_no, arrray_input_list, time_slice)
+
+
+#zaidi
